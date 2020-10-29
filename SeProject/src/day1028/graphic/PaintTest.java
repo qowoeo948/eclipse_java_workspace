@@ -23,7 +23,7 @@ public class PaintTest extends JFrame{
 		can.setBackground(Color.YELLOW);
 		//캔버스에 그림을 그리려면, 캔버스가 스스로 그리는 메서드인 .paint()메서드를 재정의해야함
 		
-		add(can); //캔버스를 프레임에 부착!!
+		this.add(can); //캔버스를 프레임에 부착!!
 		
 		setSize(300,400);
 		setVisible(true);

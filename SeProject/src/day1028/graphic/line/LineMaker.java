@@ -33,7 +33,7 @@ public class LineMaker extends JFrame  {
 		p_north = new JPanel();
 		can = new LineCanvas();
 		can.setLineMaker(this); //캔버스에게 나의 주소값 넘기기
-
+	
 		p_north.add(x1);
 		p_north.add(t_input1);
 		p_north.add(y1);
