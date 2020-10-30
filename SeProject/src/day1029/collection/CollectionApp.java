@@ -6,7 +6,7 @@
  * -컬렉션 프레임웍에서 지원하는 객체의 수는 상당히 많기는 하지만, 크게는 모여진 모습에 따라서
  * (1)순서 있는 유형 List형: 배열과 거의 같다!! [][][]
  * 						자바의 배열과 차이가 있다면,
- * 						배열: 1.반드시 생성할 때크기를 명시해야 한다.
+ * 						배열: 1.반드시 생성할 때 크기를 명시해야 한다.
  * 								따라서 동적으로 늘어날 수 없다 (고정적)
  * 							   2.자료형을 섞어 사용할 수 없다.
  * 								ex)int[]arr = new int[5]; //오직 int형만 넣을 수 있다
@@ -104,6 +104,7 @@ public class CollectionApp {
 		while(keyIter.hasNext()) { //true인 동안 키값을 접근!!
 			String key = keyIter.next();
 			String value = map.get(key); //맵의 데이터중 해당 키와 일치하는 데이터 반환!!
+			System.out.println(key);
 			System.out.println(value);
 		}
 		

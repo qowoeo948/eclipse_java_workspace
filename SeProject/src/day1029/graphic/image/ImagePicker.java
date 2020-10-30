@@ -6,7 +6,7 @@ import java.awt.Color;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import day1028.graphic.color.ThumPanel;
+import day1029.homework.ThumbNail;
 
 public class ImagePicker extends JFrame{
 	String dir="C:/Users/user/eclipse-workspace/SeProject/res/travel2/";
@@ -30,7 +30,7 @@ public class ImagePicker extends JFrame{
 		
 		//캔버스 생성 및 조립
 		for(int i=0;i<thumb.length;i++) {
-			thumb[i]=new ThumbCanvas(dir+path[i],p_center);
+			thumb[i]=new ThumbCanvas(dir+path[i], p_center);
 			p_north.add(thumb[i]);
 		}
 		

@@ -25,6 +25,7 @@ public class Messenger extends JFrame implements KeyListener, ActionListener {
 	JPanel p_south;
 	JButton bt_open; // 대화 상대방을 띄우는 버튼
 	Messenger2 ch2;
+	
 
 	public Messenger() {
 		// 나보다 부모가 먼저 태어나야 함. super(), <- JFrame("부모창")
@@ -127,6 +128,7 @@ public class Messenger extends JFrame implements KeyListener, ActionListener {
 //		Messenger2 m2 = new Messenger2();
 //		m2.setVisible(true);
 		ch2 = new Messenger2(this);
+	
 	}
 
 	public static void main(String[] args) {

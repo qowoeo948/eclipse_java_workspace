@@ -26,9 +26,9 @@ public class Bird {
 		//재헌이 질문
 		//b2는 Bird클래스 변수, 메서드접근
 		//다형성의 특징으로 자식메서드를  접근
-		Bird b2 = new Duck();
+		//Bird b2 = new Duck();
 		//부모꺼 내꺼
-		Duck d = new Duck();
+		//Duck d = new Duck();
 		
 	}
 
