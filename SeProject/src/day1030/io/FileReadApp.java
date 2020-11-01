@@ -28,7 +28,7 @@ import java.io.IOException;
 public class FileReadApp {
 	FileInputStream fis;
 	public FileReadApp() {
-		File file = new File("C:/Users/user/eclipse-workspace/SeProject/res/data/memo.txt");
+		File file = new File("C:/Users/user/eclipse-workspace/SeProject/res/data/memo2.txt");
 			
 		//로컬상의 파일을 대상으로 스트림(관)을 생성하자!!
 		try{ //이 영역은 에러가 발생할 가능성이 있는 코드임을 명시
