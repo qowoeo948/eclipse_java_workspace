@@ -1,0 +1,9 @@
+Thread란?
+-하나의 프로세스내에서 비동기적으로 실행될 수 있는 세부 실행단위
+
+생명주기
+
+Runnable상태 - running 대상이 되는 쓰레드 상태
+Running상태 - jvm에 의해 run()메서드를 실행하고 있는 상태
+Non-Runnable상태 - Thread.sleep()등에 의해 잠시 Runnable상태를 빠져나온 상태
+Dead상태 - run()메서드의 수행을 완료하여 쓰레드가 소멸되는 상태

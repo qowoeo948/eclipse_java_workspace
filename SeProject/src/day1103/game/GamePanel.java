@@ -64,7 +64,7 @@ public class GamePanel extends JPanel {
 		
 		g2.setColor(Color.WHITE);
 		g2.fillRect(0, 0, WIDTH, HEIGHT); //패널의 크기만큼 사각형이 채워진다(화면을 깨끗이 닦는 효과)
-		
+	
 		render(g2);
 	}
 	
