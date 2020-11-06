@@ -25,7 +25,7 @@ public class TableApp extends JFrame{
 	JScrollPane scroll;
 	
 	public TableApp() {
-		table = new JTable(data,column); //row 행 3 , col 열 7
+		table = new JTable(data,column); //row 행 3 , col 열 5
 		scroll = new JScrollPane(table);
 		
 		setLayout(new FlowLayout());
