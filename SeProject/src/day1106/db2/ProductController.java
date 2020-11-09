@@ -22,14 +22,19 @@ public class ProductController extends AbstractTableModel{
 	}
 
 	//컬럼의 제목 가져오기
+	//JTable이
+	//getColumnCount()의 갯수만큼 호출하면서 순서대로 0,1,2,3,4,5를 넘기면서 컬럼제목을 가져간다.
 	@Override
 	public String getColumnName(int col) {
 		return column[col];
+		
 	}
 	
 	@Override
 	public Object getValueAt(int row, int col) {
 		return data[row][col];
 	}
+	
+	
 
 }

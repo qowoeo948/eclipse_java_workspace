@@ -41,10 +41,10 @@ START WITH 1;
 
 
 /*데이터 넣기*/
-INSERT INTO TOPCATEGORY (TOPCATEGORY_ID,NAME) values(seq_topcategory.nextval,'상의');
-INSERT INTO TOPCATEGORY (TOPCATEGORY_ID,NAME) values(seq_topcategory.nextval,'하의');
-INSERT INTO TOPCATEGORY (TOPCATEGORY_ID,NAME) values(seq_topcategory.nextval,'액세서리');
-INSERT INTO TOPCATEGORY (TOPCATEGORY_ID,NAME) values(seq_topcategory.nextval,'신발');
+INSERT INTO topcategory (topcategory_id,name) values(seq_topcategory.nextval,'상의');
+INSERT INTO topcategory (topcategory_id,name) values(seq_topcategory.nextval,'하의');
+INSERT INTO topcategory (topcategory_id,name) values(seq_topcategory.nextval,'액세서리');
+INSERT INTO topcategory (topcategory_id,name) values(seq_topcategory.nextval,'신발');
 
 INSERT INTO subcategory(subcategory_id,topcategory_id, name) VALUES(seq_subcategory.nextval,1,'가디건');
 INSERT INTO subcategory(subcategory_id,topcategory_id, name) VALUES(seq_subcategory.nextval,1,'셔츠');

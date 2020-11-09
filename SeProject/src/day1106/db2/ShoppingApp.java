@@ -12,6 +12,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.font.ImageGraphicAttribute;
@@ -48,8 +50,10 @@ public class ShoppingApp extends JFrame {
 	JTextField t_brand;
 	JTextField t_price;
 	JButton bt_find; // 이미지 찾아보기
+	JButton bt_collect; //이미지 수집하기(원격지의 이미지를 나의 하드 디스크로)
 	JPanel can; // 이미지 미리보기 그려질 곳
 	JButton bt_regist;
+	CollectorFrame collectorFrame;
 
 	// 센터 영역-검색관련
 	Choice ch_category; // 검색 카테고리
@@ -100,6 +104,7 @@ public class ShoppingApp extends JFrame {
 		t_brand = new JTextField();
 		t_price = new JTextField();
 		bt_find = new JButton("이미지 찾기");
+		bt_collect = new JButton("인터넷 수집");
 		can = new JPanel() {
 			@Override
 			public void paint(Graphics g) {
@@ -117,6 +122,7 @@ public class ShoppingApp extends JFrame {
 		p_west.add(t_brand);
 		p_west.add(t_price);
 		p_west.add(bt_find);
+		p_west.add(bt_collect);		
 		p_west.add(can);
 		p_west.add(bt_regist);
 
@@ -127,6 +133,7 @@ public class ShoppingApp extends JFrame {
 		t_brand.setPreferredSize(new Dimension(135, 30));
 		t_price.setPreferredSize(new Dimension(135, 30));
 		bt_find.setPreferredSize(new Dimension(135, 30));
+		bt_collect.setPreferredSize(new Dimension(135, 30));
 		can.setPreferredSize(new Dimension(135, 115));
 		
 		p_west.setPreferredSize(new Dimension(150, 600));
@@ -143,6 +150,9 @@ public class ShoppingApp extends JFrame {
 		bt_search = new JButton("검색");
 		table = new JTable(productController = new ProductController());
 		scroll = new JScrollPane(table);
+		
+		ch_category.add("product_name");
+		ch_category.add("brand");
 
 		// 스타일 적용
 		c_north.setBackground(Color.PINK);
@@ -176,7 +186,14 @@ public class ShoppingApp extends JFrame {
 		t_brand2 = new JTextField();
 		t_price2 = new JTextField();
 		bt_find2 = new JButton("이미지 찾기");
-		can2 = new JPanel();
+		can2 = new JPanel() {
+			@Override
+			public void paint(Graphics g) {
+			g.drawImage(img, 0, 0, can2);
+			}
+			
+			
+		};
 		bt_edit = new JButton("수정");
 		bt_del = new JButton("삭제");
 
@@ -209,8 +226,9 @@ public class ShoppingApp extends JFrame {
 		add(p_east, BorderLayout.EAST);
 		
 		
-		connect();
-		getTopList();
+		connect(); //접속
+		getTopList(); //최상위 가져오기
+		getProductList(); //상품 정보 출력하기
 		
 		//윈도우창 닫으면 오라클과의 접속 끊고 프로세스 종료
 		this.addWindowListener(new WindowAdapter() {
@@ -234,7 +252,7 @@ public class ShoppingApp extends JFrame {
 			if(ch_top.getSelectedIndex()>0) {							
 			//System.out.println("내가선택한 아이템은: "+ch_top.getSelectedItem());
 			int topcategory_id = map.get(ch_top.getSelectedItem());
-//			System.out.println("맵으로 부터 추출된 value는 "+topcategory_id);
+			System.out.println("맵으로 부터 추출된 value는 "+topcategory_id);
 //			String sql ="select *from subcategory where topcategory_id ="+topcategory_id;
 //			System.out.println(sql);
 			getSubList(topcategory_id);
@@ -252,14 +270,62 @@ public class ShoppingApp extends JFrame {
 		});
 		
 		//등록버튼과 리스너 연결 
-				bt_regist.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						regist();
-					}
-				});
+		bt_regist.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+					regist();
+					getProductList();
+					table.updateUI();
+				}
+			});
+				
+	
+		//이미지 인터넷으로 수집하기 버튼과 연결
+		bt_collect.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				collectorFrame = new CollectorFrame(ShoppingApp.this);
+				
+			}
+		});
 		
 		
-		setSize(1000, 600);
+		//검색기능 구현
+		bt_search.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String category = ch_category.getSelectedItem();
+				String keyword = t_keyword.getText();
+				
+				getSearchResult(category,keyword);
+				table.updateUI(); //테이블 갱신
+			}
+		});
+		
+		table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				int row=table.getSelectedRow();
+				int col=table.getSelectedColumn();
+
+				String value = (String)table.getValueAt(row, col);
+				//System.out.println(value);
+				
+				//선택한 제품의 알맞는 카테고리 선택되어 있게 하기!!
+				setCategory(row);
+				setSubCategory(row);
+				getDetail(row); //상세보기 출력
+				
+				String filename= (String)table.getValueAt(row, 5);
+				getTargetImage("C:/Users/user/eclipse-workspace/SeProject/res/travel2/"+filename);//이미지 그리기, 
+				can2.repaint();
+				
+			}
+		});
+		
+		
+		
+		setSize(1100, 600);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setVisible(true);
@@ -307,6 +373,7 @@ public class ShoppingApp extends JFrame {
 			
 			while(rs.next()) {  //커서 1칸 전진!	
 			ch_top.add(rs.getString("name")); //사용자들이 보게될 아이템
+			ch_top2.add(rs.getString("name"));
 			
 			//해시맵에 key-value의 쌍으로 정보넣기!!
 			map.put(rs.getString("name"),rs.getInt("topcategory_id"));
@@ -348,11 +415,16 @@ public class ShoppingApp extends JFrame {
 			
 			//채우기전에 모두 지우기(초기화) -> 계속 누적되니까
 			ch_sub.removeAll(); //모두지우기
+			ch_sub2.removeAll(); //모두지우기
 			
 			ch_sub.add("choose category");
+			ch_sub2.add("choose category");
+			
 			//서브카테고리 채우기
 			while(rs.next()) {
 				ch_sub.add(rs.getString("name"));
+				ch_sub2.add(rs.getString("name"));
+				
 				map2.put(rs.getString("name"),rs.getInt("subcategory_id"));
 			}
 			
@@ -384,12 +456,20 @@ public class ShoppingApp extends JFrame {
 			//파일정보를 구한다!!
 			file = chooser.getSelectedFile();
 			System.out.println("당신이 지금 선택한 파일의 정보: "+file.getAbsolutePath());
-			img = kit.getImage(file.getAbsolutePath()); //멤버변수 img값을 구한다
-			img=ImageUtil.getCustomSize(img, 135, 115);
+			getTargetImage(file.getAbsolutePath());
 		}
 		
 		
 	}
+	
+	//그려질 이미지 구하기
+	public void getTargetImage(String path) {
+		img = kit.getImage(path); //멤버변수 img값을 구한다
+		img=ImageUtil.getCustomSize(img, 135, 115);
+		
+	}
+	
+	
 	//미리보기 구현
 	public void preview() {
 		//paint로 그림 처리~~
@@ -451,6 +531,7 @@ public class ShoppingApp extends JFrame {
 		
 		
 	//product 테이블의 레코드 가져오기
+		//이 함수의 중요한거  (rs.의 커서를 자유롭게 움직일 수 있다는 것임)
 	public void getProductList() {
 		String sql = "select *from product";
 		
@@ -458,29 +539,223 @@ public class ShoppingApp extends JFrame {
 		ResultSet rs = null;
 		
 		try {
-			pstmt=con.prepareStatement(sql); //쿼리 준비
+			//PreparesStatement 생성 시 인수 2개를 넘겨, 전후방향으로 커서를 자유롭게 이동 가능하게할 수 있다.
+			//커서를 왔다갔다 할 수 있는거고, 읽기전용
+			pstmt=con.prepareStatement(sql,ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY); //쿼리 준비
 			rs=pstmt.executeQuery(); //select문 수행 후 결과표를 rs에 대입
 			
-			//rs의 표 데이터를 ProductController가 보유한 data이차원 배열에 대입!!
-//			String[][]data = String[총레코드수][6];
+			//rs의 메서드중 .getRow()는 현재 커서의 위치 즉 레코드 어디를 가리키고 있는지를 알 수 있다.
 			
-			rs.next();
-			String[] record = new String[6];
+			rs.last(); //커서를 제일 마지막으로 보내기
+			int currentRow = rs.getRow();
+//			System.out.println("현재 커서가 가리키는 레코드 번호는 "+currentRow);
+			System.out.println("마지막 도달한 커서의 rowNum "+currentRow);
+			
+			
+			
+			//rs의 표 데이터를 ProductController가 보유한 data이차원 배열에 대입!!
+			String[][]data = new String[currentRow][productController.column.length];
+			
+			//이차원배열에 데이터를 담으려면, 커서를 다시 원상복귀시켜야 한다.
+			rs.beforeFirst();//첫번째 레코드 보다도 이전으로 되돌림..(즉 위치 초기화)
+			
+			int index=0;
+			//위에서 beforeFirst로 처음으로 돌아갔으니까 다시 밑으로 내려야돼
+			while(rs.next()) {			
+			String[] record = new String[productController.column.length];
+			
 			record[0]= rs.getString("product_id"); //그냥 String취급할수도 있어
 			record[1]= rs.getNString("subcategory_id");
-			record[2]= rs.getNString("product_id");
+			record[2]= rs.getNString("product_name");
 			record[3]= rs.getNString("brand");
 			record[4]= rs.getNString("price");
 			record[5]= rs.getNString("filename");
 			
+			//채워진 일차원 배열을 data이차원배열에 순서대로 담자
+			data[index++]=record;
+		}
+		//완성된 이차월 배열을 productController가 보유한 data배열에 주소로 대입시켜버리자
+			productController.data = data;
+		
+			
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}finally {
+			if(rs!=null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}	if(pstmt!=null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+	}
+	
+	//검색결과 출력하기
+	public void getSearchResult(String category, String keyword) {
+		String sql = "select *from product where "+category+" like '%"+keyword+"%' ";
+		
+		PreparedStatement pstmt = null;	
+		ResultSet rs = null;
+		
+		try {
+			//PreparesStatement 생성 시 인수 2개를 넘겨, 전후방향으로 커서를 자유롭게 이동 가능하게할 수 있다.
+			//커서를 왔다갔다 할 수 있는거고, 읽기전용
+			pstmt=con.prepareStatement(sql,ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY); //쿼리 준비
+			rs=pstmt.executeQuery(); //select문 수행 후 결과표를 rs에 대입
+			
+			//rs의 메서드중 .getRow()는 현재 커서의 위치 즉 레코드 어디를 가리키고 있는지를 알 수 있다.
+			
+			rs.last(); //커서를 제일 마지막으로 보내기
+			int currentRow = rs.getRow();
+//			System.out.println("현재 커서가 가리키는 레코드 번호는 "+currentRow);
+			System.out.println("마지막 도달한 커서의 rowNum "+currentRow);
+			
+			
+			
+			//rs의 표 데이터를 ProductController가 보유한 data이차원 배열에 대입!!
+			String[][]data = new String[currentRow][productController.column.length];
+			
+			//이차원배열에 데이터를 담으려면, 커서를 다시 원상복귀시켜야 한다.
+			rs.beforeFirst();//첫번째 레코드 보다도 이전으로 되돌림..(즉 위치 초기화)
+			
+			int index=0;
+			//위에서 beforeFirst로 처음으로 돌아갔으니까 다시 밑으로 내려야돼
+			while(rs.next()) {			
+			String[] record = new String[productController.column.length];
+			
+			record[0]= rs.getString("product_id"); //그냥 String취급할수도 있어
+			record[1]= rs.getNString("subcategory_id");
+			record[2]= rs.getNString("product_name");
+			record[3]= rs.getNString("brand");
+			record[4]= rs.getNString("price");
+			record[5]= rs.getNString("filename");
+			
+			//채워진 일차원 배열을 data이차원배열에 순서대로 담자
+			data[index++]=record;
+		}
+		//완성된 이차월 배열을 productController가 보유한 data배열에 주소로 대입시켜버리자
+			productController.data = data;
+		
+			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			if(rs!=null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}	if(pstmt!=null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+	}
+	
+	//제품 상세보기
+	public void getDetail(int row) {
+		t_name2.setText((String)table.getValueAt(row, 2));//상품명
+		t_brand2.setText((String)table.getValueAt(row, 3));//브랜드
+		t_price2.setText((String)table.getValueAt(row, 4));//상품가격
+
+		//이미지처리
+	}
+	
+	public void setCategory(int row) {
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		String subcategory_id = (String)table.getValueAt(row, 1);
+		
+		String sql="select *from topcategory where topcategory_id =(";
+		sql+="select topcategory_id from subcategory where subcategory_id="+subcategory_id;
+		sql+=")";
+		//System.out.println(sql);
+		
+		try {
+			pstmt = con.prepareStatement(sql); //쿼리문준비
+			rs = pstmt.executeQuery();//쿼리문 실행
+			
+			if(rs.next()) {
+				//select메서드는 선택될 아이템 지정할 수 있다.
+				ch_top2.select(rs.getString("name"));				
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			if(rs!=null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}	if(pstmt!=null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+	}
+	
+	public void setSubCategory(int row) {
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		String subcategory_id = (String)table.getValueAt(row, 1);
+		
+
+		String sql = "select *from subcategory where subcategory_id ="+subcategory_id;
+		//System.out.println(sql);
+		
+		try {
+			pstmt = con.prepareStatement(sql); //쿼리문준비
+			rs = pstmt.executeQuery();//쿼리문 실행
+			
+			if(rs.next()) {
+				//select메서드는 선택될 아이템 지정할 수 있다.
+				ch_sub2.select(rs.getString("name"));				
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			if(rs!=null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}	if(pstmt!=null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		
 	}
 		
-	
 	
 	//접속 해제
 	public void disconnect() {
