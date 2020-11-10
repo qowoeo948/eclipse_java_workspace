@@ -1,0 +1,67 @@
+/*
+ * 채팅메세지를 보내지 않더라도, 채팅에 참여하는 모든사람이 보낸 메시지를 수신하려면
+ * 무한루프로 실행되면서 스트림을 읽을 쓰레드가 필요하다!
+ * */
+
+package day1110.network.multicasting;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
+
+public class ClientThread extends Thread {
+	MultiClient multiClient;
+	Socket socket;
+	BufferedReader buffr;
+	BufferedWriter buffw;
+	boolean flag = true;
+
+	public ClientThread(MultiClient multiClient,Socket socket) {
+		this.multiClient = multiClient;
+		this.socket = socket;
+
+		try {
+			// 접속이 성공되었으므로, 스트림을 얻을 수 있다.
+			buffr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			buffw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+	
+	@Override
+	public void run() {
+		listen();
+	}
+
+	// 서버가 보낸 메시지 듣기
+	public void listen() {
+		String msg = null;
+		try {
+			while (flag) { // 끝없이 들어야되기 때문에
+				msg = buffr.readLine();
+				multiClient.area.append(msg + "\n"); // 대화기록하기 자기자신한테도
+			
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// 서버에 메시지 보내기 (출력)
+	public void send(String msg) {
+		try {
+			buffw.write(msg + "\n"); // 반드시 끝을 알려주기위해 \n 줄바꿈하기
+			buffw.flush(); // 남아있는 데이터없이, 버퍼지우기
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+}

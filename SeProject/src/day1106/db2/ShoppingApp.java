@@ -634,11 +634,11 @@ public class ShoppingApp extends JFrame {
 			String[] record = new String[productController.column.length];
 			
 			record[0]= rs.getString("product_id"); //그냥 String취급할수도 있어
-			record[1]= rs.getNString("subcategory_id");
-			record[2]= rs.getNString("product_name");
-			record[3]= rs.getNString("brand");
-			record[4]= rs.getNString("price");
-			record[5]= rs.getNString("filename");
+			record[1]= rs.getString("subcategory_id");
+			record[2]= rs.getString("product_name");
+			record[3]= rs.getString("brand");
+			record[4]= rs.getString("price");
+			record[5]= rs.getString("filename");
 			
 			//채워진 일차원 배열을 data이차원배열에 순서대로 담자
 			data[index++]=record;
