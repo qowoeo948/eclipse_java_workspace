@@ -76,7 +76,7 @@ public class EchoServer extends JFrame{
 			area.append("서버 준비\n");
 			
 			//서버가동하기
-			//자바는 쓰레드기반이므로, 지금까지 메인실행부라 불렸던 실행주체도 사실은 시스템에 의해서 생성된 쓰레드였다.
+			//자바는 쓰레드기반이므로, 지금까지 메인실행부라 불렸던 실행조체도 사실은 시스템에 의해서 생성된 쓰레드였다.
 			//하지만, 메인쓰레드는 개발자가 생성하는 일반쓰레드와는 하는 역할에 차이가 있다.
 			//메인쓰레드는 프로그램을 운영해주는 역할, 특히 그래픽처리와, 이벤트처리까지 담당하므로, 절대로 
 			//이러한 업무 금지 1) 무한루프에 빠뜨리지 말것   2) 대기상태에 빠뜨리지 말것,	예로 (accept,read())
@@ -100,7 +100,7 @@ public class EchoServer extends JFrame{
 	
 	//메시지 받기 (청취)
 	public void listen() {
-		String msg="null";
+		String msg=null;
 		try {
 			while(true) {
 			msg = buffr.readLine();
