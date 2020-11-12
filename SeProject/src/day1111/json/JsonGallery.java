@@ -147,11 +147,10 @@ public class JsonGallery extends JFrame{
 		
 		
 		//제목 등의 영화정보 출력
-		la[0].setText(la[0].getText()+" : "+title);
-		la[1].setText(la[1].getText()+" : "+phase);
-		la[2].setText(la[2].getText()+" : "+category);
-		la[3].setText(la[3].getText()+" : "+release);
-		
+		la[0].setText(title);
+		la[1].setText(phase);
+		la[2].setText(category);
+		la[3].setText(release);
 		
 	}
 	
