@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -57,11 +58,68 @@ public class BoardDetail extends JPanel{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				boardApp.setPage(BoardApp.BOARD_LIST);
+				BoardList boardList =(BoardList) boardApp.getPages(boardApp.BOARD_LIST);
+				boardList.getList(); //리스트 갱신
+				
+				
+				boardApp.setPage(BoardApp.BOARD_LIST); //목록보기
 				
 			}
 		});
+		
+		//삭제버튼과 리스너 연결
+		bt_del.addActionListener((e)->{
+			int result = JOptionPane.showConfirmDialog(this, "정말 삭제하시겠습니까?");
+			
+			if(result==JOptionPane.OK_OPTION)
+			del(board.getBoard_id());
+		});
+		
+		
+		//수정버튼과 리스너 연결
+		bt_edit.addActionListener((e)->{
+			int result=edit(board);
+			if(result==0) {
+				JOptionPane.showMessageDialog(this, "수정실패");
+			}else {
+				JOptionPane.showMessageDialog(this, "수정성공");
+				BoardList boardList =(BoardList) boardApp.getPages(boardApp.BOARD_LIST);
+				boardList.getList(); //리스트 갱신
+				//목록 보여주기
+				boardApp.setPage(boardApp.BOARD_LIST);
+				
+			}
+			
+		});
+		
 	}
+	
+	//조회수 증가
+	public void updateHit(int board_id) {
+		PreparedStatement pstmt=null;
+
+		//		String sql = "update board set hit=hit+1 where board_id=내가 본글 id";
+		String sql = "update board set hit=hit+1 where board_id="+board_id;
+		
+		try {
+			pstmt=con.prepareStatement(sql); //쿼리문 준비
+			int result = pstmt.executeUpdate(); //쿼리문 실행
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			if(pstmt!=null) {	
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		
+	}
+	
 	
 	//한건 가져오기
 	public void getDetail(int board_id) {
@@ -115,5 +173,71 @@ public class BoardDetail extends JPanel{
 		}
 		
 	}
+	
+	//int로 반환받아서 처리하는 방법도 있어 -> 강사님 깃허브에서 참고
+	public void del(int board_id) {
+		PreparedStatement pstmt = null;
+		
+		String sql="delete from board where board_id="+board_id;
+		
+		try {
+			pstmt = con.prepareStatement(sql); //쿼리준비
+			int result = pstmt.executeUpdate(); //쿼리실행
+			if(result==0) {
+				JOptionPane.showMessageDialog(this, "삭제 실패");
+			}else {
+				JOptionPane.showMessageDialog(this, "삭제 성공");
+				
+				BoardList boardList =(BoardList) boardApp.getPages(boardApp.BOARD_LIST);
+				boardList.getList(); //리스트 갱신
+				//목록 보여주기
+				boardApp.setPage(boardApp.BOARD_LIST);
+			}	
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			if(pstmt!=null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	//낱개로 전달하지말고, 1건의 게시물을 담고 있는 인스턴스를 전달하자
+	//delete는 그대로 edit은 return해서 2가지 경우
+	public int edit(Board board) {
+		PreparedStatement pstmt=null;
+		int result=0;
+		String sql = "update board set title=?, content=? where board_id=?";
+		
+		try {
+			pstmt = con.prepareStatement(sql); //쿼리문 준비
+			
+			
+			pstmt.setString(1, t_title.getText());  //사용자가 입력한 값
+			pstmt.setString(2, t_title.getText());  //사용자가 입력한 값
+			pstmt.setInt(3, board.getBoard_id());  //기존 상세보기에서의 board_id
+			
+			result = pstmt.executeUpdate(); //쿼리문 실행
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			if(pstmt!=null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return result;
+	}
+	
 
 }

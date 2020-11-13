@@ -49,6 +49,7 @@ public class BoardList extends JPanel{
 		BoardDetail boardDetail=(BoardDetail)boardApp.getPages(BoardApp.BOARD_DETAIL);
 		String board_id = (String)table.getValueAt(table.getSelectedRow(), 0); //board_id
 		boardDetail.getDetail(Integer.parseInt(board_id));
+		boardDetail. updateHit(Integer.parseInt(board_id));
 		
 		boardApp.setPage(BoardApp.BOARD_DETAIL); //상세보기
 		}
