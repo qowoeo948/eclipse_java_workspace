@@ -19,6 +19,7 @@ import java.net.URLConnection;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -50,24 +51,28 @@ public class DownLoader extends JFrame{
 		add(bt_down);
 		add(bar);
 
-		parsingThread = new Thread() {
-			@Override
-			public void run() {
-				parseData();
-				//총 몇건이 존재하는지 출력
-//				System.out.println(movieHandler.movieList.size());
-				for(int i =0; i<movieHandler.movieList.size();i++) {
-					Movie movie = movieHandler.movieList.get(i);
-					download(movie.getUrl());
-				}
-			}
-		};
 		
 		//다운로드 버튼과 리스너 연결
 		bt_down.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				parsingThread = new Thread() {
+					@Override
+					public void run() {
+						parseData();
+						//총 몇건이 존재하는지 출력
+//				System.out.println(movieHandler.movieList.size());
+						
+						int len = movieHandler.movieList.size();
+						for(int i =0; i<movieHandler.movieList.size();i++) {
+							Movie movie = movieHandler.movieList.get(i);
+							download(movie.getUrl());
+							
+						}
+						JOptionPane.showMessageDialog(DownLoader.this,"총  "+len+"개 다운로드 완료");
+					}
+				};
 				parsingThread.start();
 			}
 		});
@@ -106,7 +111,10 @@ public class DownLoader extends JFrame{
 	public void download(String path) { //매개변수로 가져올 자원을 지정한다.
 		InputStream is = null;
 		FileOutputStream fos =null; //다운받은 파일을 저장할 스트림
-		int count=0;
+		int total=0; //다운로드 받을 자원의 총 바이트 수
+		int readCount=0; //현재 까지 읽은 바이트 수
+		bar.setValue(0); //프로그래스바 초기화
+		
 		try {
 			URL url = new URL(path);
 			URLConnection con = url.openConnection();
@@ -114,19 +122,26 @@ public class DownLoader extends JFrame{
 			
 			
 			http.setRequestMethod("GET");
+			
+			//커넥션 객체를 이용하면, 대상 자원의 크기까지 얻어올 수 있다.
+			total = con.getContentLength(); //연결된 자원의 총 바이트 반환!!
+			
 			is = http.getInputStream();
 			long time = System.currentTimeMillis(); //파일명
-			String ext = FileManager.getExtend(path);
+			String ext = FileManager.getExtend2(path);
 			String filename = time+"."+ext; //최종적으로 부여된  파일 명
+			System.out.println("구해진 확장자는 "+filename);
 			fos = new FileOutputStream("C:/Users/user/eclipse-workspace/SeProject/res/download/"+filename);
 			int data = -1;
 			while(true) {
 				data = is.read();
-				bar.setValue(count++);
+				bar.setValue((int)getPercent(readCount,total)); //int형을 인수로 넣어야 하므로 형변환
 				if(data==-1)break;
+				readCount++;
 				fos.write(data);
 				
 			}
+		
 			
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -150,6 +165,13 @@ public class DownLoader extends JFrame{
 		}
 		
 		
+	}
+	
+	//퍼센트를 구하는 메서드 정의
+	public float getPercent(int read, float total) {
+		//읽은 수 / 총바이트수 *100
+		
+		return (read/total) *100; 
 	}
 	
 	public static void main(String[] args) {

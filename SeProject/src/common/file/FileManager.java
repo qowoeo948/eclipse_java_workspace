@@ -14,15 +14,25 @@ public class FileManager {
 		return str[1];//두번째 칸이 확장자임
 	}
 	
-	/*
-	public static void main(String[] args) {
-		String filename = getFilename("http://cdn.011st.com/11dims/resize/600x600/quality/75/11src/pd/20/7/4/9/1/8/3/FmIzU/2003749183_B.jpg");
-		System.out.println(filename);
+	//확장자 구하기 업데이트,  마지막 점을 기준으로 가져와야 문제가 없다
+	public static String getExtend2(String filename) {
+		//마지막 점의 위치 구하기!! lastIndexOf메서드 사용하자
 		
-		String ext = getExtend(filename);
-		System.out.println(ext);
+		int lastIndex = filename.lastIndexOf(".");
+		
+		//마지막점 다음 문자부터 가져와야 하므로 +1을 더한다!
+		
+		return filename.substring(lastIndex+1,filename.length());
+		
 	}
-	*/
+	
+	
+	
+	public static void main(String[] args) {
+//		String filename = getFilename("https://images-na.ssl-images-amazon.com/images/I/91qvAndeVYL._RI_.jpg");
+	
+	}
+	
 }
 
 
