@@ -59,6 +59,7 @@ public class AdminMain extends JFrame{
 		la_footer = new JLabel("SwingMall All rights reserved",SwingConstants.CENTER);
 		
 		con = dbManager.connect(); 
+		
 		if(con==null) {
 			JOptionPane.showMessageDialog(this, "데이터베이스 접속 실패");
 		}else {
@@ -89,6 +90,8 @@ public class AdminMain extends JFrame{
 		
 		//조립
 		user_container.setLayout(new BorderLayout());
+		
+		//모든페이지를 미리 붙여놓자
 		for(int i=0;i<page.length;i++) {
 			p_content.add(page[i]);
 		}

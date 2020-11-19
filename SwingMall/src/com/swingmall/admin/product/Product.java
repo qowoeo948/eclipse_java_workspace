@@ -2,6 +2,7 @@ package com.swingmall.admin.product;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -37,15 +38,20 @@ public class Product extends Page{
 	ArrayList<ArrayList> subList = new ArrayList<ArrayList>(); //모든 하위카테고리
 
 	ProductModel model;
+	RegistForm registForm;
 	
 	public Product(AdminMain adminMain) {
 		super(adminMain);
 
 		
 		getTopList(); //상위 카테고리 가져오기, 맴버변수인 topList에 최상위 카테고리가 채워진다.
-		for(String name:topList) {
-			getSubList(name); //상위 카테고리 가져오기, 맴버변수인 topList에 최상위 카테고리가 채워진다.
+		for(String name:topList) { //변수 name에 topList가 대입 size만큼
+		getSubList(name); 
 		}
+		
+//		for(int i =0; i<topList.size();i++) {
+//			getSubList(topList.get(i));
+//		}
 
 		//노드만들기
 		//'상품목록'이라는 제목의 최상위노드 생성하기
@@ -62,6 +68,8 @@ public class Product extends Page{
 		s2 = new JScrollPane(table);
 		bt_regist = new JButton("등록하기");
 		
+		//등록폼 생성
+		registForm = new RegistForm(this);
 		
 		//스타일
 		s1.setPreferredSize(new Dimension(200,adminMain.HEIGHT-100));
@@ -78,6 +86,7 @@ public class Product extends Page{
 		add(p_west,BorderLayout.WEST);
 		add(p_center);
 
+		
 		getProductList(null);//모든상품 가져오기
 		
 		tree.addTreeSelectionListener(new TreeSelectionListener() {
@@ -85,9 +94,21 @@ public class Product extends Page{
 			public void valueChanged(TreeSelectionEvent e) {
 //				System.out.println("나 선택했어?");
 				DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
-				getProductList(selectedNode.toString()); //모든 상품 가져오기
+			
+				if(selectedNode.toString().equals("상품목록")) {
+					getProductList(null);//모든상품 가져오기					
+				}else {
+					getProductList(selectedNode.toString()); //모든 상품 가져오기
+					
+				}
 			}
 		});
+		
+		bt_regist.addActionListener((e)->{
+			addRemoveContent(p_center, registForm);
+			
+		});
+		
 		
 	}
 
@@ -216,6 +237,12 @@ public class Product extends Page{
 		
 	}
 	
+	//보여질 컨텐트와 가려질 컨텐트를 제어하는 메서드
+	public void addRemoveContent(Component removeObj, Component addObj) {
+		this.remove(removeObj); //제거될 자
+		this.add(addObj);//부착될 자
+		((JPanel)addObj).updateUI();
+	}
 	
 
 }
