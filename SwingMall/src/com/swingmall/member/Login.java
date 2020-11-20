@@ -2,8 +2,14 @@ package com.swingmall.member;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -39,11 +45,126 @@ public class Login extends Page{
 		p_content.add(bt_regist);
 		add(p_content);
 		
+		//아이디 컴포넌트에 포커스 올리기
+		//t_id.requestFocus();
+		
 		//회원가입 버튼과 리스너 연결 
 				bt_regist.addActionListener((e)->{
 					getShopMain().showPage(ShopMain.MEMBER_REGIST);
 				});
+				
+				//로그인 버튼과 리스너 연결
+				bt_login.addActionListener((e)->{
+					ShopMember vo = new ShopMember();
+					vo.setMid(t_id.getText());
+					vo.setPass(new String(t_pass.getPassword()));
+					validCheck(vo);
+				});
+				
+				//키보드 리스너 연결 엔터처리
+				t_id.addKeyListener(new KeyAdapter() {
+					@Override
+					public void keyReleased(KeyEvent e) {
+						if(e.getKeyCode()==KeyEvent.VK_ENTER) {
+							ShopMember vo = new ShopMember();
+							vo.setMid(t_id.getText());
+							vo.setPass(new String(t_pass.getPassword()));
+							validCheck(vo);
+						}
+					}
+				});
+				t_pass.addKeyListener(new KeyAdapter() {
+					@Override
+					public void keyReleased(KeyEvent e) {
+						if(e.getKeyCode()==KeyEvent.VK_ENTER) {
+							ShopMember vo = new ShopMember();
+							vo.setMid(t_id.getText());
+							vo.setPass(new String(t_pass.getPassword()));
+							validCheck(vo);
+						}
+					}
+				});
+				
+	}
+	
+	public void validCheck(ShopMember shopMember) {
+		//유효성 체크 (입력하지 않은 필드가 있는지 여부에 따른 피드백...)
+		if(shopMember.getMid().length()<1) { //문자열의 길이가 0이라면
+			JOptionPane.showMessageDialog(this, "아이디를 입력하세요");
+		}else if(shopMember.getPass().length()<1) {
+			JOptionPane.showMessageDialog(this, "패스워드를 입력하세요");
+		}else {
+			if(login(shopMember)==null) {
+				JOptionPane.showMessageDialog(this, "로그인 정보가 올바르지 않습니다");
+			}else {
+				JOptionPane.showMessageDialog(this, "로그인 성공");
+				//Home페이지 보여주기
+				getShopMain().showPage(ShopMain.HOME);
+				//버튼라벨을 로그아웃으로 전환
+				getShopMain().navi[4].setText("logout");
+				getShopMain().navi[4].setBackground(Color.GRAY);
+				getShopMain().navi[4].setForeground(Color.WHITE);
+				getShopMain().setHasSession(true); //로그인 상태임을 알수있는 값 true로 바꿔
+				
+			}
+		}
 		
 	}
+	
+
+	
+	//회원 로그인 처리 메서드 정의: 로그인 성공 후 Home을 보여줄 예정
+	//아래의 메서드가 ShopMember를 반환하므로 만일 로그인 실패한 경우에는 
+	//null을 반환받아서 간다
+	public ShopMember login(ShopMember shopMember) {
+		PreparedStatement pstmt=null;
+		ResultSet rs = null;
+		ShopMember vo = null; //로그인 성공 후 회원의 모든 정보를 담게될 VO
+		
+		String sql="select *from shop_member ";
+		sql+=" where mid=? and pass=?";
+		
+		
+		try {
+			pstmt=getShopMain().getCon().prepareStatement(sql);
+			pstmt.setString(1, shopMember.getMid());
+			pstmt.setString(2, shopMember.getPass());
+			
+			rs= pstmt.executeQuery();
+			
+			//rs.next()가 참이면, 회원이 존재하는 것이므로 로그인으로 인정
+			//회원정보를 vo에 옮겨담자!
+			if(rs.next()) {
+				vo = new ShopMember();
+				vo.setMember_id(rs.getInt("member_id"));
+				vo.setMid(rs.getString("mid"));
+				vo.setPass(rs.getString("Pass"));
+				vo.setName(rs.getString("name"));
+				vo.setPhone(rs.getString("phone"));
+				vo.setEmail(rs.getString("email"));
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			getShopMain().getDbManager().close(pstmt,rs);
+		}
+		
+		return vo;
+		
+		
+	}
+	
+	//로그아웃처리
+	//1.hasSession의 값을 false 2.버튼 배경색 빼기 3. 버튼의 텍스트 login으로 바꾸기
+	public void logout() {
+		getShopMain().setHasSession(false);
+		getShopMain().navi[4].setBackground(null);
+		getShopMain().navi[4].setForeground(null);
+		getShopMain().navi[4].setText("login");
+		getShopMain().showPage(ShopMain.HOME);
+		
+	}
+	
 
 }
