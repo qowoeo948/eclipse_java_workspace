@@ -31,9 +31,7 @@ public class Box extends Canvas{
 		
 		
 		//글씨 그리기
-		context.setFill(Color.BLACK);
-		context.setFont(new Font(17));
-		context.fillText(title, 0, 20);
+		renderText(title);
 	}
 	
 	//현재 박스에 그려진 글씨 지우기
@@ -45,6 +43,14 @@ public class Box extends Canvas{
 		context.setStroke(Color.BLACK);
 		context.strokeRect(0, 0, width, height); 
 		
+	}
+	
+	//현재 박스에 글씨 그리기
+	public void renderText(String title) {
+		this.title = title;
+		context.setFill(Color.BLACK);
+		context.setFont(new Font(17));
+		context.fillText(title, 2, 20);
 	}
 	
 }

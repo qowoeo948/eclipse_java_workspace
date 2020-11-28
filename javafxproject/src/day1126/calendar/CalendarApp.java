@@ -96,8 +96,8 @@ public class CalendarApp extends Application{
 		//조작된 상태의 날짜 객체에서 현재 요일을 물어보자
 		startDayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
 		
-		
-		//System.out.println("현재"+cal.get(Calendar.DAY_OF_WEEK));
+		System.out.println("현재"+cal.get(Calendar.DAY_OF_WEEK));
+	
 	}
 	
 	//해당 월이 몇일까지 있는 지 구하기
@@ -122,6 +122,20 @@ public class CalendarApp extends Application{
 		for(int i=0; i<box.length;i++) {
 			box[i].erase();
 		}
+		
+		//주의!! 출력하기 전에 유저가 선택한 년,월을 이용하여 이 두 함수를 다시 구해야함
+		//따라서 아래의 메서드를 다시 호출하면됨
+		startDayOfWeek();
+		getLastDate();
+		
+		//각 월에 알맞는 데이터 출력
+		//반복문에서 i의 역할은 날짜 출력이 아니라, 단지 반복문의 횟수를 결정하기 위한..!
+		int n=1; //1일부터 1씩증가하여 출력될 날짜 출력용 변수
+		for(int i=(startDayOfWeek-1);i<(startDayOfWeek-1)+lastDate; i++) {
+			box[i].renderText(Integer.toString(n));
+			n++;
+		}
+		
 	}
 	
 	public void showWindow(Stage stage,Parent parent) {
