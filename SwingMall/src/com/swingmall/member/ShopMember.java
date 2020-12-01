@@ -1,10 +1,5 @@
 package com.swingmall.member;
 
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-
 public class ShopMember {
 
 	private int member_id;

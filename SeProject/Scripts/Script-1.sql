@@ -18,6 +18,20 @@ CREATE TABLE subcategory(
 	, CONSTRAINT fk_topcategory FOREIGN KEY (topcategory_id) 
 		REFERENCES topcategory(topcategory_id)
 );
+
+create table r_info(
+	member_id number,
+	hotel_id number,
+	data varchar(100),
+	constraint fk_hotel_member FOREIGN KEY(member_id)
+		REFERENCES hotel_member (member_id)
+
+
+);
+
+
+
+
 CREATE SEQUENCE seq_subcategory
 INCREMENT BY 1
 START WITH 1;
